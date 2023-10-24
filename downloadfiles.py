@@ -1,9 +1,24 @@
 import os
 import requests
 from bs4 import BeautifulSoup
+import sys
+#import argparse, readline
+
+#downloadfiles.py
 
 # Replace with the URL of the website you want to scrape
 url = 'http://xxxx.htm'
+# sys.argv[0] 
+
+target_dir = ''
+# sys.argv[1]
+
+if len(target_dir) == 0:
+    target_dir='.'
+
+#if len(sys.argv) < 1:
+#   print("\nPlease provide the URL and target directory.")
+#   os._exit
 
 # Send an HTTP GET request to the URL
 response = requests.get(url)
@@ -11,7 +26,7 @@ response = requests.get(url)
 # Check if the request was successful (status code 200)
 if response.status_code == 200:
     # Create a directory to save the downloaded files
-    download_folder = 'downloads'
+    download_folder = 'downloads/' + target_dir
     os.makedirs(download_folder, exist_ok=True)
 
     # Parse the HTML content of the page
@@ -32,9 +47,11 @@ if response.status_code == 200:
                 link_response = requests.get(href)                
                 if link_response.status_code == 200:                    
                     new_filename = filename.replace("%20", "_")
-                    with open(new_filename, 'wb') as file:
-                        file.write(link_response.content)
-                    print(f"Downloaded: {new_filename}")
+                    if not os.path.isfile(new_filename):  
+                        #print(f"{new_filename} is not existed")                  
+                        with open(new_filename, 'wb') as file:
+                            file.write(link_response.content)
+                        print(f"Downloaded: {new_filename}")
                 else:
                     print(f"Failed to download {href}. Status code: {link_response.status_code}")
 
